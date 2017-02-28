@@ -177,14 +177,14 @@ fi
 
 
 # Update the total sum log
-let "sum+=$(head -n 1 ./logs/sum.log)"
-echo $sum > ./logs/sum.log
+let "sum+=$(head -n 1 ./data/sum.log)"
+echo $sum > ./data/sum.log
 
 # Update the total number of dice log
-let "numdice+=$(head -n 1 ./logs/dice.log)"
-echo $numdice > ./logs/dice.log
+let "numdice+=$(head -n 1 ./data/dice.log)"
+echo $numdice > ./data/dice.log
 
 
-if ! grep -q ${nick//:} ./logs/users.log ; then
-	echo ${nick//:} >> ./logs/users.log				
+if ! grep -q ${nick//:} ./data/users.log ; then
+	echo ${nick//:} >> ./data/users.log				
 fi

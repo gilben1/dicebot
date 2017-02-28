@@ -18,11 +18,11 @@ if [[ $chan == dicebot ]] ; then
     elif `echo $saying | grep -i '\bhelp\b' > /dev/null` ; then
         echo "PRIVMSG ${nick//:} :Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt for help using dicebot"
     elif `echo $saying | grep -i '\bstats\b' > /dev/null` ; then
-        sum=$(head -n 1 ./logs/sum.log)
+        sum=$(head -n 1 ./data/sum.log)
         sumlong=`echo $sum | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
         echo "PRIVMSG ${nick//:} :Total sum of all dice rolled: $(printf "%0.3E\n" $sum) or $sumlong"
 
-        tot=$(head -n 1 ./logs/dice.log)
+        tot=$(head -n 1 ./data/dice.log)
         totlong=`echo $tot | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
         echo "PRIVMSG ${nick//:} :Total number of dice rolled: $(printf "%0.3E\n" $tot) or $totlong"
 
@@ -33,7 +33,7 @@ if [[ $chan == dicebot ]] ; then
             while read p; do
                 out="$out $p"	
                 let "num+=1"
-            done <./logs/users.log
+            done <./data/users.log
             echo "PRIVMSG ${nick//:} :$num $out"
         fi
     fi
@@ -51,11 +51,11 @@ else
             echo "PRIVMSG $chan $nick: Dicebot Commands: commands, help, !roll, roll, stats, who"
         elif `echo $saying | grep -i '\bstats\b' > /dev/null` ; then # STATS
             
-            sum=$(head -n 1 ./logs/sum.log)
+            sum=$(head -n 1 ./data/sum.log)
             sumlong=`echo $sum | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
             echo "PRIVMSG $chan $nick: Total sum of all dice rolled: $(printf "%0.3E\n" $sum) or $sumlong"
 
-            tot=$(head -n 1 ./logs/dice.log)
+            tot=$(head -n 1 ./data/dice.log)
             totlong=`echo $tot | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
             echo "PRIVMSG $chan $nick: Total number of dice rolled: $(printf "%0.3E\n" $tot) or $totlong"
 

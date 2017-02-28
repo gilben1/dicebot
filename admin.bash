@@ -19,9 +19,9 @@ elif `echo $saying | grep -i '\bpart\b' > /dev/null` ; then # LEAVE CHANNEL
     echo "PRIVMSG ${nick//:} :attempting to leave #$channel"
 
 elif `echo $saying | grep -i '\breset\b' > /dev/null` ; then # RESET LOGS
-    echo 0 > ./logs/sum.log
-    echo 0 > ./logs/dice.log 	
-    rm ./logs/users.log
+    echo 0 > ./data/sum.log
+    echo 0 > ./data/dice.log 	
+    rm ./data/users.log
 elif `echo $saying | grep -i '\bautojoin\b' > /dev/null` ; then # Set Autojoin
     comm=`echo $saying | cut -d '#' -f 2`
     channel=`echo $comm | cut -d ' ' -f 1`
@@ -30,8 +30,8 @@ elif `echo $saying | grep -i '\bautojoin\b' > /dev/null` ; then # Set Autojoin
         pass=""
     fi
 
-    if ! grep -q "#$channel" ./logs/autojoin.txt ; then
-        echo "#$channel $pass" >> ./logs/autojoin.txt
+    if ! grep -q "#$channel" ./data/autojoin.txt ; then
+        echo "#$channel $pass" >> ./data/autojoin.txt
         echo "PRIVMSG ${nick//:} :Adding #$channel to autojoin file"
     else
         echo "PRIVMSG ${nick//:} :#$channel is already in the autojoin file"
@@ -40,7 +40,7 @@ elif `echo $saying | grep -i '\bautojoin\b' > /dev/null` ; then # Set Autojoin
 elif `echo $saying | grep -i '\bautoremove\b' > /dev/null` ; then # Remove from autojoin
     comm=`echo $saying | cut -d '#' -f 2`
     channel=`echo $comm | cut -d ' ' -f 1`
-    if ! grep -q "#$channel" ./logs/autojoin.txt ; then
+    if ! grep -q "#$channel" ./data/autojoin.txt ; then
         echo "PRIVMSG ${nick//:} :#$channel is not in the autojoin file"
     else
         i=0
@@ -49,11 +49,11 @@ elif `echo $saying | grep -i '\bautoremove\b' > /dev/null` ; then # Remove from 
                 temp[$i]=$p
                 let "i+=1"
             fi
-        done <./logs/autojoin.txt
-        rm ./logs/autojoin.txt
+        done <./data/autojoin.txt
+        rm ./data/autojoin.txt
         for i in "${temp[@]}"
         do
-            echo "$i" >> ./logs/autojoin.txt
+            echo "$i" >> ./data/autojoin.txt
         done
         echo "PRIVMSG ${nick//:} :#$channel has been removed from the autojoin file"
     fi
@@ -62,7 +62,7 @@ elif `echo $saying | grep -i '\bautolist\b' > /dev/null` ; then # List autojoin 
     output="Channels in autojoin.txt: "
     while read p; do
         output="$output \"$p\""
-    done <./logs/autojoin.txt
+    done <./data/autojoin.txt
     echo "PRIVMSG ${nick//:} :$output"
 
 elif `echo $saying | grep -i '\bpuppet\b' > /dev/null` ; then # PUPPET
