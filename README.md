@@ -7,7 +7,7 @@ Use `./dicebot.sh $channel $port` to start the bot, connecting to the server and
 
 # Autojoin
 
-Create a directory called logs, add a file autojoin.txt
+In the subdirectory data, add or edit the file autojoin.txt
 Line seperated list of channels + passcode (if necessary)
 
 Ex.
