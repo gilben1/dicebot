@@ -4,9 +4,31 @@ function send {
 	echo "-> $1"
 	echo "$1" >> .botfile
 }
+
+
+if [ $# -lt 2 ] ; then
+    echo "Specify the channel and port to connect to: "
+    echo "Format: ./dicebot.sh \$channel \$port"
+    exit
+fi
+
+count=0
+for i in "$@" ; do
+    if [ $count -eq 0 ] ; then
+        channel=$i
+        let "count += 1"
+    elif [ $count -eq 1 ] ; then
+        port=$i
+        let "count += 1"
+    fi
+done
+
+connection="$channel:$port"
+
+#6697
 rm .botfile
 mkfifo .botfile
-tail -f .botfile | openssl s_client -connect irc.cat.pdx.edu:6697 | while true ; do
+tail -f .botfile | openssl s_client -connect $connection | while true ; do
 	if [[ -z $started ]] ; then
 		send "USER dicebot dicebot dicebot :dicebot"
 		send "NICK dicebot"
