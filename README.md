@@ -25,9 +25,9 @@ Alternatively, users can type `!roll $DICECOMBO`
 # Dice Combinations
 Dice combinations are `+` separated. They can be of three different formats:
 ```
-\#d#
+#d#
 d#
-\#
+#
 ```
 \#d# will roll the # of dice specified of the second # type. For example, `2d6` simulates rolling 2 six-sided die.
 d# is the same as #d#, but will always roll one of that type. `d20` will roll one twenty sided die
