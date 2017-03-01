@@ -54,7 +54,7 @@ tail -f .botfile | openssl s_client -connect $connection | while true ; do
         # Read through the channels set to autojoin, and join them
         while read p; do
             send "JOIN $p"
-        done <./logs/autojoin.txt
+        done <./data/autojoin.txt
 
 		started="yes"
 	fi
