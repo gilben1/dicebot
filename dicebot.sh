@@ -25,6 +25,22 @@ done
 
 connection="$channel:$port"
 
+if [ ! -f ./data/autojoin.txt ] ; then
+    touch ./data/autojoin.txt
+fi
+if [ ! -f ./data/sum.log ] ; then
+    touch ./data/sum.log
+fi
+if [ ! -f ./data/dice.log ] ; then
+    touch ./data/dice.log
+fi
+
+if [ ! -f ./data/users.log ] ; then
+    touch ./data/users.log
+fi
+
+
+
 #6697
 rm .botfile
 mkfifo .botfile
