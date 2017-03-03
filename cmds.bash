@@ -5,9 +5,9 @@ read nick chan saying
 
 admin=":gilben"
 
-# Admin private message commands
+# Private messages
 if [[ $chan == dicebot ]] ; then
-    if [[ $nick == $admin ]] ; then	
+    if [[ $nick == $admin ]] ; then	# Admin commands
         output=`echo $nick $chan $saying | ./admin.bash`
         echo "$output"
     fi
@@ -15,9 +15,9 @@ if [[ $chan == dicebot ]] ; then
     if `echo $saying | grep -i '\broll\b' > /dev/null` ; then
         output=`echo $nick $chan $saying | ./roll.bash`
         echo "$output"
-    elif `echo $saying | grep -i '\bhelp\b' > /dev/null` ; then
+    elif `echo $saying | grep -i '\bhelp\b' > /dev/null` ; then # Help docs
         echo "PRIVMSG ${nick//:} :Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt for help using dicebot"
-    elif `echo $saying | grep -i '\bstats\b' > /dev/null` ; then
+    elif `echo $saying | grep -i '\bstats\b' > /dev/null` ; then # display stats
         sum=$(head -n 1 ./data/sum.log)
         sumlong=`echo $sum | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
         echo "PRIVMSG ${nick//:} :Total sum of all dice rolled: $(printf "%0.3E\n" $sum) or $sumlong"
@@ -26,8 +26,7 @@ if [[ $chan == dicebot ]] ; then
         totlong=`echo $tot | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
         echo "PRIVMSG ${nick//:} :Total number of dice rolled: $(printf "%0.3E\n" $tot) or $totlong"
 
-
-        if `echo $saying | grep -i '\busers\b' > /dev/null` ; then
+        if `echo $saying | grep -i '\busers\b' > /dev/null` ; then # Get users
             out="Users of dicebot:"
             num=0
             while read p; do
