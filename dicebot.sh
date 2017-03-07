@@ -5,51 +5,49 @@ function send {
 	echo "$1" >> .botfile
 }
 
-
 if [ $# -lt 2 ] ; then
-    echo "Specify the channel and port to connect to: "
-    echo "Format: ./dicebot.sh \$channel \$port"
+    echo "Specify the nickname, server and port to connect to: "
+    echo "Format: ./dicebot.sh \$server \$port [-optional nickname]"
     exit
 fi
 
 count=0
+
+if [ $# -lt 3 ] ; then
+    botnick="dicebot"
+fi
+
 for i in "$@" ; do
     if [ $count -eq 0 ] ; then
-        channel=$i
+        server=$i
         let "count += 1"
     elif [ $count -eq 1 ] ; then
         port=$i
         let "count += 1"
+    elif [ $count -eq 2 ] ; then
+        botnick=$i
+        let "count += 1"
     fi
 done
 
-connection="$channel:$port"
+echo $botnick > ./data/botnick.txt
+
+connection="$server:$port"
 
 if [ ! -f ./data/autojoin.txt ] ; then
     touch ./data/autojoin.txt
 fi
-if [ ! -f ./data/sum.log ] ; then
-    touch ./data/sum.log
-fi
-if [ ! -f ./data/dice.log ] ; then
-    touch ./data/dice.log
+
+if [ ! -f ./data/blacklist.txt ] ; then
+    touch ./data/blacklist.txt
 fi
 
-if [ ! -f ./data/users.log ] ; then
-    touch ./data/users.log
-fi
-
-
-
-#6697
 rm .botfile
 mkfifo .botfile
 tail -f .botfile | openssl s_client -connect $connection | while true ; do
 	if [[ -z $started ]] ; then
-		send "USER dicebot dicebot dicebot :dicebot"
-		send "NICK dicebot"
-		#send "JOIN #gilbentest"
-		#send "JOIN #tabletop"
+		send "USER ${botnick} ${botnick} ${botnick} :${botnick}"
+		send "NICK ${botnick}"
 
         # Read through the channels set to autojoin, and join them
         while read p; do
