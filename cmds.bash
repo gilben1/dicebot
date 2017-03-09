@@ -5,8 +5,11 @@ read nick chan saying
 
 admin=":gilben"
 
+botnick=$(head -n 1 ./data/botnick.txt)
+regex="\b${botnick}\b"
+
 # Private messages
-if [[ $chan == dicebot ]] ; then
+if [[ $chan == $botnick ]] ; then
     if [[ $nick == $admin ]] ; then	# Admin commands
         output=`echo $nick $chan $saying | ./admin.bash`
         echo "$output"
@@ -38,7 +41,7 @@ if [[ $chan == dicebot ]] ; then
     fi
 # Regular channel commands
 else
-    if `echo $saying | grep -i '\bdicebot\b' > /dev/null` ; then
+    if `echo $saying | grep -i $regex > /dev/null` ; then
         if `echo $saying | grep -i '\bhelp\b' > /dev/null` ; then # HELP
             echo "PRIVMSG $chan $nick: Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt for help using dicebot"
         elif `echo $saying | grep -i '\broll\b' > /dev/null` ; then # ROLL
