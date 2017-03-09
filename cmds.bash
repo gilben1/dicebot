@@ -40,7 +40,7 @@ if [[ $chan == $botnick ]] ; then
         fi
     fi
 # Regular channel commands
-else
+elif ! grep -Fxqi "${nick//:}" ./data/blacklist.txt ; then
     if `echo $saying | grep -i $regex > /dev/null` ; then
         if `echo $saying | grep -i '\bhelp\b' > /dev/null` ; then # HELP
             echo "PRIVMSG $chan $nick: Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt for help using dicebot"
