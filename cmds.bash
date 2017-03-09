@@ -57,8 +57,8 @@ else
             tot=$(head -n 1 ./data/dice.log)
             totlong=`echo $tot | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
             echo "PRIVMSG $chan $nick: Total number of dice rolled: $(printf "%0.3E\n" $tot) or $totlong"
-
-
+        elif `echo $saying | grep -i '\bsource\b' > /dev/null` ; then # SOURCE code on GITHUB
+            echo "PRIVMSG $chan $nick: Dicebot source code: https://github.com/gilben1/dicebot"
         fi
     elif `echo $saying | grep -i '\!roll\b' > /dev/null` ; then # ROLL AGAIN
         output=`echo $nick $chan $saying | ./roll.bash`
