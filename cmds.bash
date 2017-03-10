@@ -3,6 +3,8 @@
 
 read nick chan saying
 
+set -f
+
 admin=":gilben"
 
 botnick=$(head -n 1 ./data/botnick.txt)
@@ -19,7 +21,7 @@ if [[ $chan == $botnick ]] ; then
         output=`echo $nick $chan $saying | ./roll.bash`
         echo "$output"
     elif `echo $saying | grep -i '\bhelp\b' > /dev/null` ; then # Help docs
-        echo "PRIVMSG ${nick//:} :Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt for help using dicebot"
+        echo "NOTIFY ${nick//:} :Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt for help using dicebot"
     elif `echo $saying | grep -i '\bstats\b' > /dev/null` ; then # display stats
         sum=$(head -n 1 ./data/sum.log)
         sumlong=`echo $sum | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
