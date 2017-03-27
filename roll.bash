@@ -3,16 +3,15 @@
 read nick chan saying
 dicecap=25000
 
-
 # test for the command used
 header="PRIVMSG $chan $nick: "
 if [[ $chan == dicebot ]] ; then
-    amount=5
+    amount=1
     header="PRIVMSG ${nick//:} :"
 elif `echo $saying | grep -i '\!roll\b' > /dev/null` ; then
-    amount=5
+    amount=2 #5
 else
-    amount=6
+    amount=3 #6
 fi
 
 

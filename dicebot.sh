@@ -63,7 +63,7 @@ tail -f .botfile | openssl s_client -connect $connection | while true ; do
 	elif `echo $irc | grep PRIVMSG > /dev/null` ; then
 		chan=`echo $irc | cut -d ' ' -f 3`
 		barf=`echo $irc | cut -d ' ' -f 1-3`
-		saying=`echo $irc##$barf :}|tr -d "\r\n"`
+		saying=`echo ${irc##$barf :}|tr -d "\r\n"`
 		nick="${irc%%!*}"; nick="${nick#;}"
 		var=`echo $nick $chan $saying | ./cmds.bash`
 		if [[ ! -z $var ]] ; then
