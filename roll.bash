@@ -1,7 +1,6 @@
 #!/bin/bash
 
 read nick chan saying
-
 dicecap=25000
 
 
