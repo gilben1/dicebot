@@ -61,11 +61,14 @@ tail -f .botfile | openssl s_client -connect $connection | while true ; do
 	if `echo "$irc" | cut -d ' ' -f 1 | grep PING > /dev/null` ; then
 		send "PONG"
 	elif `echo $irc | grep PRIVMSG > /dev/null` ; then
-		chan=`echo "$irc" | cut -d ' ' -f 3`
-		barf=`echo "$irc" | cut -d ' ' -f 1-3`
+		chan=`echo "$irc" | cut -d ' ' -f 3` 
+        barf=`echo "$irc" | cut -d ' ' -f 1-3`
+
+        #saying=`echo "$irc" | sed -e 's/^'"$barf"' ://' | tr -d "\r\n"`
+
 		saying=`echo "${irc##$barf :}"|tr -d "\r\n"`
 		nick="${irc%%!*}"; nick="${nick#;}"
-		var=`echo $nick $chan $saying | ./cmds.bash`
+		var=`echo "$nick" "$chan" "$saying" | ./cmds.bash`
 		if [[ ! -z $var ]] ; then
 			send "$var"
 		fi
