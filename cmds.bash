@@ -11,7 +11,7 @@ regex="\b${botnick}\b"
 # Private messages
 if [[ $chan == $botnick ]] ; then
     if [[ $nick == $admin ]] ; then	# Admin commands
-        output=`echo $nick $chan $saying | ./admin.bash`
+        output=`echo "$nick" "$chan" "$saying" | ./admin.bash`
         echo "$output"
     fi
 
@@ -64,7 +64,7 @@ elif ! grep -Fxqi "${nick//:}" ./data/blacklist.txt ; then
             echo "PRIVMSG $chan $nick: Dicebot source code: https://github.com/gilben1/dicebot"
         fi
     elif echo "$saying" | grep -i '\!roll\b' > /dev/null ; then # ROLL AGAIN
-        output=`echo $nick $chan $saying | ./roll.bash`
+        output=`echo "$nick" "$chan" "$saying" | ./roll.bash`
         echo "$output"
     fi
 fi
