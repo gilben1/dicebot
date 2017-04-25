@@ -44,7 +44,8 @@ fi
 
 rm .botfile
 mkfifo .botfile
-tail -f .botfile | openssl s_client -connect $connection | while true ; do
+#tail -f .botfile | openssl s_client -connect $connection | while true ; do
+tail -f .botfile | openssl s_client -connect $connection | while read irc ; do
 	if [[ -z $started ]] ; then
 		send "USER ${botnick} ${botnick} ${botnick} :${botnick}"
 		send "NICK ${botnick}"
@@ -56,7 +57,7 @@ tail -f .botfile | openssl s_client -connect $connection | while true ; do
 
 		started="yes"
 	fi
-	read irc
+	#read irc
 	echo "<- $irc"
 	if `echo "$irc" | cut -d ' ' -f 1 | grep PING > /dev/null` ; then
 		send "PONG"
@@ -74,3 +75,5 @@ tail -f .botfile | openssl s_client -connect $connection | while true ; do
 		fi
 	fi
 done
+tmux send -t dicebot exit ENTER
+
