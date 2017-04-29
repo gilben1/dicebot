@@ -3,8 +3,7 @@
 
 read nick chan saying
 
-admin=":gilben"
-
+. ./.config
 botnick=$(head -n 1 ./data/botnick.txt)
 regex="\b${botnick}\b"
 

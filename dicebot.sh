@@ -5,30 +5,7 @@ function send {
 	echo "$1" >> .botfile
 }
 
-if [ $# -lt 2 ] ; then
-    echo "Specify the nickname, server and port to connect to: "
-    echo "Format: ./dicebot.sh \$server \$port [-optional nickname]"
-    exit
-fi
-
-count=0
-
-if [ $# -lt 3 ] ; then
-    botnick="dicebot"
-fi
-
-for i in "$@" ; do
-    if [ $count -eq 0 ] ; then
-        server=$i
-        let "count += 1"
-    elif [ $count -eq 1 ] ; then
-        port=$i
-        let "count += 1"
-    elif [ $count -eq 2 ] ; then
-        botnick=$i
-        let "count += 1"
-    fi
-done
+. ./.config
 
 echo $botnick > ./data/botnick.txt
 
@@ -44,7 +21,9 @@ fi
 
 rm .botfile
 mkfifo .botfile
-#tail -f .botfile | openssl s_client -connect $connection | while true ; do
+
+echo "" | mail -s "$botnick connecting to $connection" $mail
+
 tail -f .botfile | openssl s_client -connect $connection | while read irc ; do
 	if [[ -z $started ]] ; then
 		send "USER ${botnick} ${botnick} ${botnick} :${botnick}"
@@ -57,7 +36,6 @@ tail -f .botfile | openssl s_client -connect $connection | while read irc ; do
 
 		started="yes"
 	fi
-	#read irc
 	echo "<- $irc"
 	if `echo "$irc" | cut -d ' ' -f 1 | grep PING > /dev/null` ; then
 		send "PONG"
