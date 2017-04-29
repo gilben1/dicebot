@@ -67,7 +67,7 @@ elif `echo $saying | grep -i '\bautolist\b' > /dev/null` ; then # List autojoin 
 
 elif `echo $saying | grep -i '\bpuppet\b' > /dev/null` ; then # PUPPET
     index=0
-    delim=5
+    delim=2
     parser=`echo $saying | cut -d ' ' -f $delim`
     #while `echo $parser | grep '#' > /dev/null` ; do
     while [[ ${parser:0:1} == "#" ]] ; do
@@ -79,7 +79,7 @@ elif `echo $saying | grep -i '\bpuppet\b' > /dev/null` ; then # PUPPET
      
     act=0
     roll=0
-    let "newdim=$delim-4"
+    let "newdim=$delim-1"
     if `echo $saying | grep -i '\/me' > /dev/null` ; then
         message=`echo $saying | cut -d '#' -f $newdim | cut -d ' ' -f 3-5000`
         act=1
