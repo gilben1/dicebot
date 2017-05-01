@@ -2,7 +2,7 @@
 
 read nick chan saying
 
-if `echo $saying | grep -i '\bjoin\b' > /dev/null` ; then # JOIN CHANNEL
+if `echo $saying | grep -i '^!join\b' > /dev/null` ; then # JOIN CHANNEL
     comm=`echo $saying | cut -d '#' -f 2`
     channel=`echo $comm | cut -d ' ' -f 1`
     pass=`echo $comm | cut -d ' ' -f 2`
@@ -12,17 +12,17 @@ if `echo $saying | grep -i '\bjoin\b' > /dev/null` ; then # JOIN CHANNEL
     echo "JOIN #$channel $pass"
     echo "PRIVMSG ${nick//:} :attempting to join #$channel"
 
-elif `echo $saying | grep -i '\bpart\b' > /dev/null` ; then # LEAVE CHANNEL
+elif `echo $saying | grep -i '^!part\b' > /dev/null` ; then # LEAVE CHANNEL
     comm=`echo $saying | cut -d '#' -f 2`
     channel=`echo $comm | cut -d ' ' -f 1`
     echo "PART #$channel"
     echo "PRIVMSG ${nick//:} :attempting to leave #$channel"
 
-elif `echo $saying | grep -i '\breset\b' > /dev/null` ; then # RESET LOGS
+elif `echo $saying | grep -i '^!reset\b' > /dev/null` ; then # RESET LOGS
     echo 0 > ./data/sum.log
     echo 0 > ./data/dice.log 	
     rm ./data/users.log
-elif `echo $saying | grep -i '\bautojoin\b' > /dev/null` ; then # Set Autojoin
+elif `echo $saying | grep -i '^!autojoin\b' > /dev/null` ; then # Set Autojoin
     comm=`echo $saying | cut -d '#' -f 2`
     channel=`echo $comm | cut -d ' ' -f 1`
     pass=`echo $comm | cut -d ' ' -f 2`
@@ -37,7 +37,7 @@ elif `echo $saying | grep -i '\bautojoin\b' > /dev/null` ; then # Set Autojoin
         echo "PRIVMSG ${nick//:} :#$channel is already in the autojoin file"
     fi
 
-elif `echo $saying | grep -i '\bautoremove\b' > /dev/null` ; then # Remove from autojoin
+elif `echo $saying | grep -i '^!autoremove\b' > /dev/null` ; then # Remove from autojoin
     comm=`echo $saying | cut -d '#' -f 2`
     channel=`echo $comm | cut -d ' ' -f 1`
     if ! grep -q "#$channel" ./data/autojoin.txt ; then
@@ -58,14 +58,14 @@ elif `echo $saying | grep -i '\bautoremove\b' > /dev/null` ; then # Remove from 
         echo "PRIVMSG ${nick//:} :#$channel has been removed from the autojoin file"
     fi
 
-elif `echo $saying | grep -i '\bautolist\b' > /dev/null` ; then # List autojoin channels
+elif `echo $saying | grep -i '^!autolist\b' > /dev/null` ; then # List autojoin channels
     output="Channels in autojoin.txt: "
     while read p; do
         output="$output \"$p\""
     done <./data/autojoin.txt
     echo "PRIVMSG ${nick//:} :$output"
 
-elif `echo $saying | grep -i '\bpuppet\b' > /dev/null` ; then # PUPPET
+elif `echo $saying | grep -i '^!puppet\b' > /dev/null` ; then # PUPPET
     index=0
     delim=2
     parser=`echo $saying | cut -d ' ' -f $delim`
@@ -94,13 +94,16 @@ elif `echo $saying | grep -i '\bpuppet\b' > /dev/null` ; then # PUPPET
     do
         if [[ $act == 0 ]] && [[ $roll == 0 ]] ; then
             echo "PRIVMSG $i :$message"
+            echo "PRIVMSG ${nick//:} :Sent message to $i"
         elif [[ $roll == 0 ]] ; then
             echo "PRIVMSG $i :ACTION $message"
+            echo "PRIVMSG ${nick//:} :Sent message to $i"
         else
             echo "PRIVMSG $i :roll $message"
             
             output=`echo ":dicebot" $i $message | ./roll.bash`
             echo "$output"
+            echo "PRIVMSG ${nick//:} :Sent message to $i"
         fi
     done
 fi
