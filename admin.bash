@@ -2,30 +2,29 @@
 
 read nick chan saying
 
-if `echo $saying | grep -i '^!join\b' > /dev/null` ; then # JOIN CHANNEL
-    comm=`echo $saying | cut -d '#' -f 2`
-    channel=`echo $comm | cut -d ' ' -f 1`
-    pass=`echo $comm | cut -d ' ' -f 2`
+if `echo "$saying" | grep -i '^!join\b' > /dev/null` ; then # JOIN CHANNEL
+    channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
+    pass=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 2`
+
     if [[ $pass == $channel ]] ; then
         pass=""
     fi
     echo "JOIN #$channel $pass"
     echo "PRIVMSG ${nick//:} :attempting to join #$channel"
 
-elif `echo $saying | grep -i '^!part\b' > /dev/null` ; then # LEAVE CHANNEL
-    comm=`echo $saying | cut -d '#' -f 2`
-    channel=`echo $comm | cut -d ' ' -f 1`
+elif `echo "$saying" | grep -i '^!part\b' > /dev/null` ; then # LEAVE CHANNEL
+    channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     echo "PART #$channel"
     echo "PRIVMSG ${nick//:} :attempting to leave #$channel"
 
-elif `echo $saying | grep -i '^!reset\b' > /dev/null` ; then # RESET LOGS
+elif `echo "$saying" | grep -i '^!reset\b' > /dev/null` ; then # RESET LOGS
     echo 0 > ./data/sum.log
     echo 0 > ./data/dice.log 	
     rm ./data/users.log
-elif `echo $saying | grep -i '^!autojoin\b' > /dev/null` ; then # Set Autojoin
-    comm=`echo $saying | cut -d '#' -f 2`
-    channel=`echo $comm | cut -d ' ' -f 1`
-    pass=`echo $comm | cut -d ' ' -f 2`
+elif `echo "$saying" | grep -i '^!autojoin\b' > /dev/null` ; then # Set Autojoin
+    channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
+    pass=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 2`
+
     if [[ $pass == $channel ]] ; then
         pass=""
     fi
@@ -37,57 +36,46 @@ elif `echo $saying | grep -i '^!autojoin\b' > /dev/null` ; then # Set Autojoin
         echo "PRIVMSG ${nick//:} :#$channel is already in the autojoin file"
     fi
 
-elif `echo $saying | grep -i '^!autoremove\b' > /dev/null` ; then # Remove from autojoin
-    comm=`echo $saying | cut -d '#' -f 2`
-    channel=`echo $comm | cut -d ' ' -f 1`
-    if ! grep -q "#$channel" ./data/autojoin.txt ; then
-        echo "PRIVMSG ${nick//:} :#$channel is not in the autojoin file"
+elif `echo "$saying" | grep -i '^!autoremove\b' > /dev/null` ; then # Remove from autojoin
+    channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
+    line=$(grep -n "#$channel" ./data/autojoin.txt | cut -d : -f 1)
+    if [ -z $line ] ; then
+        echo "PRIVMSG ${nick//:} :#$channel was not found in the autojoin file"
     else
-        i=0
-        while read p; do
-            if ! [[ $p == "#$channel" ]] ; then
-                temp[$i]=$p
-                let "i+=1"
-            fi
-        done <./data/autojoin.txt
-        rm ./data/autojoin.txt
-        for i in "${temp[@]}"
-        do
-            echo "$i" >> ./data/autojoin.txt
-        done
+        sed -i "$line d" ./data/autojoin.txt
         echo "PRIVMSG ${nick//:} :#$channel has been removed from the autojoin file"
     fi
 
-elif `echo $saying | grep -i '^!autolist\b' > /dev/null` ; then # List autojoin channels
+elif `echo "$saying" | grep -i '^!autolist\b' > /dev/null` ; then # List autojoin channels
     output="Channels in autojoin.txt: "
     while read p; do
         output="$output \"$p\""
     done <./data/autojoin.txt
     echo "PRIVMSG ${nick//:} :$output"
 
-elif `echo $saying | grep -i '^!puppet\b' > /dev/null` ; then # PUPPET
+elif `echo "$saying" | grep -i '^!puppet\b' > /dev/null` ; then # PUPPET
     index=0
     delim=2
-    parser=`echo $saying | cut -d ' ' -f $delim`
+    parser=`echo "$saying" | cut -d ' ' -f $delim`
     #while `echo $parser | grep '#' > /dev/null` ; do
     while [[ ${parser:0:1} == "#" ]] ; do
         channels[$index]=$parser
         let "index+=1"
         let "delim+=1"
-        parser=`echo $saying | cut -d ' ' -f $delim`
+        parser=`echo "$saying" | cut -d ' ' -f $delim`
     done
      
     act=0
     roll=0
     let "newdim=$delim-1"
-    if `echo $saying | grep -i '\/me' > /dev/null` ; then
-        message=`echo $saying | cut -d '#' -f $newdim | cut -d ' ' -f 3-5000`
+    if `echo "$saying" | grep -i '\/me' > /dev/null` ; then
+        message=`echo "$saying" | cut -d '#' -f $newdim | cut -d ' ' -f 3-5000`
         act=1
-    elif `echo $saying | grep -i '\broll\b' > /dev/null` ; then
-        message=`echo $saying | cut -d '#' -f $newdim | cut -d ' ' -f 3`
+    elif `echo "$saying" | grep -i '\broll\b' > /dev/null` ; then
+        message=`echo "$saying" | cut -d '#' -f $newdim | cut -d ' ' -f 3`
         roll=1
     else
-        message=`echo $saying | cut -d '#' -f $newdim | cut -d ' ' -f 2-5000`
+        message=`echo "$saying" | cut -d '#' -f $newdim | cut -d ' ' -f 2-5000`
     fi
 
     for i in "${channels[@]}"
