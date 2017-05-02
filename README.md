@@ -3,7 +3,7 @@ Roll some dice in an IRC bot
 
 # Running
 
-Use `./dicebot.sh $channel $port` to start the bot, connecting to the server and port of your choice
+Use `./dicebot`. Connection settings and botnick are found in `.config`
 
 # Autojoin
 
