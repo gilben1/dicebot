@@ -8,7 +8,7 @@ header="PRIVMSG $chan $nick: "
 if [[ $chan == dicebot ]] ; then
     amount=1
     header="PRIVMSG ${nick//:} :"
-elif `echo $saying | grep -i '\!roll\b' > /dev/null` ; then
+elif `echo "$saying" | grep -i '\!roll\b' > /dev/null` ; then
     amount=2 #5
 else
     amount=3 #6
@@ -18,7 +18,7 @@ fi
 
 
 # Cut out the dice from the message
-dice=`echo $saying | cut -d ' ' -f $amount | cut -d '#' -f 1`
+dice=`echo "$saying" | cut -d ' ' -f $amount | cut -d '#' -f 1`
 # Add "+" so the delimiter for parsing works to the end
 dice="$dice+"
 
@@ -30,7 +30,7 @@ delim=1 # current delimiter number
 di=0	# Dice/multiples index 
 ai=0	# Additives index
 
-parser=`echo $dice | cut -d '+' -f $delim`
+parser=`echo "$dice" | cut -d '+' -f $delim`
 
 
 # To heck with it, let them have bad input.
@@ -42,16 +42,16 @@ while ! [[ $parser == "" ]] ; do
 		additives[$ai]=$parser
 		let "ai+=1"
 	elif [[ $parser =~ ^[0-9]+d[0-9]+$ ]] ; then	
-		multiples[$di]=`echo $parser | cut -d 'd' -f 1`	
-		sizes[$di]=`echo $parser | cut -d 'd' -f 2` 
+		multiples[$di]=`echo "$parser" | cut -d 'd' -f 1`	
+		sizes[$di]=`echo "$parser" | cut -d 'd' -f 2` 
 		let "di+=1"
 	elif [[ $parser =~ ^d[0-9]+$ ]] ; then
 		multiples[$di]=1
-		sizes[$di]=`echo $parser | cut -d 'd' -f 2`
+		sizes[$di]=`echo "$parser" | cut -d 'd' -f 2`
 		let "di+=1"
 	fi
 	let "delim+=1"
-	parser=`echo $dice | cut -d '+' -f $delim`
+	parser=`echo "$dice" | cut -d '+' -f $delim`
 done	
 
 
@@ -84,7 +84,7 @@ for i in "${sizes[@]}"
 do
 	counter=0
 
-    numout=`echo $i | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
+    numout=`echo "$i" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
 
     while [[ $counter -lt ${multiples[$index]} ]] ; do	
         
@@ -102,7 +102,7 @@ do
         fi
 
         # Make a version that has commas in the correct locations
-        resultout=`echo $result | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
+        resultout=`echo "$result" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
 
         if [[ ${dicemsg[$msgnumber]} == "" ]] ; then
             dicemsg[$msgnumber]="(d$numout: $resultout)"			
@@ -125,7 +125,7 @@ fi
 hide=0	
 
 # Comma output
-numdiceout=`echo $numdice | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
+numdiceout=`echo "$numdice" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
 
 if [[ $numdice -gt 100 ]] ; then
 	#echo "PRIVMSG $chan $nick: Dice overflow exception ($numdiceout dice). Hiding main output."
@@ -143,7 +143,7 @@ do
 		fi
 
         # Comma output
-        addout=`echo $i | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
+        addout=`echo "$i" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
 		
         dicemsg[$msgnumber]="${dicemsg[$msgnumber]} (+$addout)"
 		let "sum+=$i"
@@ -161,7 +161,7 @@ if [[ $hide == 0 ]] ; then
 fi
 
 # Comma output
-sumout=`echo $sum | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
+sumout=`echo "$sum" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
 
 # Echo the sum
 # If beyond a certain value, add a scientific notation output in addition to the regular
@@ -176,13 +176,13 @@ fi
 
 # Update the total sum log
 let "sum+=$(head -n 1 ./data/sum.log)"
-echo $sum > ./data/sum.log
+echo "$sum" > ./data/sum.log
 
 # Update the total number of dice log
 let "numdice+=$(head -n 1 ./data/dice.log)"
-echo $numdice > ./data/dice.log
+echo "$numdice" > ./data/dice.log
 
 
-if ! grep -q ${nick//:} ./data/users.log ; then
-	echo ${nick//:} >> ./data/users.log				
+if ! grep -q "${nick//:}" ./data/users.log ; then
+	echo "${nick//:}" >> ./data/users.log				
 fi
