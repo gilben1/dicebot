@@ -43,8 +43,6 @@ tail -f .botfile | openssl s_client -connect $connection | while read irc ; do
 		chan=`echo "$irc" | cut -d ' ' -f 3` 
         barf=`echo "$irc" | cut -d ' ' -f 1-3`
 
-        #saying=`echo "$irc" | sed -e 's/^'"$barf"' ://' | tr -d "\r\n"`
-
 		saying=`echo "${irc##$barf :}"|tr -d "\r\n"`
 		nick="${irc%%!*}"; nick="${nick#;}"
 		var=`echo "$nick" "$chan" "$saying" | ./cmds.bash`
