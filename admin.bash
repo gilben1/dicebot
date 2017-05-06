@@ -40,6 +40,11 @@ elif `echo "$saying" | grep -i '^!part\b' > /dev/null` ; then # LEAVE CHANNEL
     echo "PART #$channel"
     privsay "attempting to leave #$channel"
 
+elif `echo "$saying" | grep -i '^!reset\b' > /dev/null` ; then # RESET LOGS
+    echo 0 > ./data/sum.log
+    echo 0 > ./data/dice.log    
+    rm ./data/users.log
+
 elif `echo "$saying" | grep -i '^!autojoin\b' > /dev/null` ; then # Set Autojoin
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     pass=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 2`
@@ -63,6 +68,7 @@ elif `echo "$saying" | grep -i '^!autoremove\b' > /dev/null` ; then # Remove fro
         sed -i "$line d" ./data/autojoin.txt
         privsay "#$channel has been removed from the autojoin file"
     fi
+
 elif `echo "$saying" | grep -i '^!autolist\b' > /dev/null` ; then # List autojoin channels
     output="Channels in autojoin.txt: "
     while read p; do
