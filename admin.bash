@@ -85,7 +85,7 @@ elif `echo "$saying" | grep -i '^!puppet\b' > /dev/null` ; then # PUPPET
         let "delim+=1"
         parser=`echo "$saying" | cut -d ' ' -f $delim`
     done
-     
+
     act=0
     let "newdim=$delim-1"
     if `echo "$saying" | grep -i '\/me' > /dev/null` ; then
