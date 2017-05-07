@@ -5,21 +5,27 @@ read nick chan saying
 
 . ./.config
 
+# Sends message to current channel
+# $1 = message to send
 function say()
 {
     echo "PRIVMSG $chan :$1"
 }
 
+# Sends private message to user
+# $1 = Message to send
 function privsay()
 {
     echo "PRIVMSG ${nick//:} :$1"
 }
 
+# Sends pinging message to channel
+# $1 = user to ping
+# $2 = message to send
 function say-to()
 {
     echo "PRIVMSG $chan $1: $2"
 }
-
 
 botnick=$(head -n 1 ./data/botnick.txt)
 regex="\b${botnick}\b"
