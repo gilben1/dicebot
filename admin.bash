@@ -2,6 +2,9 @@
 
 read nick saying
 
+#TODO change greps for conditions in "has" function
+
+
 # Send message to indicated channel
 # $1 = channel to send to
 # $2 = message to send
