@@ -2,6 +2,9 @@
 
 read nick saying
 
+#TODO change greps for conditions in "has" function
+
+
 # Send message to indicated channel
 # $1 = channel to send to
 # $2 = message to send
@@ -25,8 +28,15 @@ function act()
     echo "PRIVMSG $1 :ACTION $2"
 }
 
+# Returns whether the regex is found in the passed variable
+# $1 = variable to search
+# $2 = regex search condition
+function has()
+{
+    echo "$1" | grep -i $2 > /dev/null
+}
 
-if `echo "$saying" | grep -i '^!join\b' > /dev/null` ; then # JOIN CHANNEL
+if has "$saying" '^!join\b' ; then
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     pass=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 2`
     if [[ $pass == $channel ]] ; then
@@ -35,17 +45,17 @@ if `echo "$saying" | grep -i '^!join\b' > /dev/null` ; then # JOIN CHANNEL
     echo "JOIN #$channel $pass"
     privsay "attempting to join #$channel"
 
-elif `echo "$saying" | grep -i '^!part\b' > /dev/null` ; then # LEAVE CHANNEL
+elif has "$saying" '^!part\b' ; then
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     echo "PART #$channel"
     privsay "attempting to leave #$channel"
 
-elif `echo "$saying" | grep -i '^!reset\b' > /dev/null` ; then # RESET LOGS
+elif has "$saying" '^!reset\b' ; then
     echo 0 > ./data/sum.log
     echo 0 > ./data/dice.log    
     rm ./data/users.log
 
-elif `echo "$saying" | grep -i '^!autojoin\b' > /dev/null` ; then # Set Autojoin
+elif has "$saying" '^!autojoin\b' ; then
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     pass=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 2`
     if [[ $pass == $channel ]] ; then
@@ -59,7 +69,7 @@ elif `echo "$saying" | grep -i '^!autojoin\b' > /dev/null` ; then # Set Autojoin
         privsay "#$channel is already in the autojoin file"
     fi
 
-elif `echo "$saying" | grep -i '^!autoremove\b' > /dev/null` ; then # Remove from autojoin
+elif has "$saying" '^!autoremove\b' ; then
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     line=$(grep -n "#$channel" ./data/autojoin.txt | cut -d : -f 1)
     if [ -z $line ] ; then
@@ -69,13 +79,14 @@ elif `echo "$saying" | grep -i '^!autoremove\b' > /dev/null` ; then # Remove fro
         privsay "#$channel has been removed from the autojoin file"
     fi
 
-elif `echo "$saying" | grep -i '^!autolist\b' > /dev/null` ; then # List autojoin channels
+elif has "$saying" '^!autolist\b' ; then
     output="Channels in autojoin.txt: "
     while read p; do
         output="$output \"$p\""
     done <./data/autojoin.txt
     privsay "$output"
-elif `echo "$saying" | grep -i '^!puppet\b' > /dev/null` ; then # PUPPET
+
+elif has "$saying" '^!puppet\b' ; then
     index=0
     delim=2
     parser=`echo "$saying" | cut -d ' ' -f $delim`
@@ -88,7 +99,7 @@ elif `echo "$saying" | grep -i '^!puppet\b' > /dev/null` ; then # PUPPET
 
     act=0
     let "newdim=$delim-1"
-    if `echo "$saying" | grep -i '\/me' > /dev/null` ; then
+    if has "$saying" '\/me' ; then
         message=`echo "$saying" | cut -d '#' -f $newdim | cut -d ' ' -f 3-5000`
         act=1
     else
