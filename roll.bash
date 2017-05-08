@@ -18,7 +18,11 @@ fi
 
 
 # Cut out the dice from the message
-dice=`echo "$saying" | cut -d ' ' -f $amount | cut -d '#' -f 1`
+#dice=`echo "$saying" | cut -d ' ' -f $amount | cut -d '#' -f 1`
+dice=`echo "$saying" | cut -d ' ' -f $amount`
+
+
+
 # Add "+" so the delimiter for parsing works to the end
 dice="$dice+"
 
