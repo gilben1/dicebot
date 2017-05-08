@@ -36,7 +36,7 @@ parser=`echo "$dice" | cut -d '+' -f $delim`
 # To heck with it, let them have bad input.
 # Deal with bad input later
 
-additives=( $(echo "$dice" | grep -Po '[^d][0-9]+[^d]' ) )
+additives=( $(echo "$dice" | grep -Po '\+[0-9]+\+' ) )
 multiples=( $(echo "$dice" | grep -o '\+[0-9]*d' ) )
 sizes=( $(echo "$dice" | grep -o 'd[0-9]*\+' ) )
 
@@ -60,27 +60,6 @@ done
 for i in "${additives[@]}" ; do
     echo "PRIVMSG ${nick//:} :Additives: $i"
 done
-
-exit
-
-while ! [[ $parser == "" ]] ; do
-    # If the delim is an additive (only a number), treat it differently
-    if [[ $parser =~ ^[0-9]+$ ]] ; then
-        additives[$ai]=$parser
-        let "ai+=1"
-    elif [[ $parser =~ ^[0-9]+d[0-9]+$ ]] ; then
-        multiples[$di]=`echo "$parser" | cut -d 'd' -f 1`
-        sizes[$di]=`echo "$parser" | cut -d 'd' -f 2`
-        let "di+=1"
-    elif [[ $parser =~ ^d[0-9]+$ ]] ; then
-        multiples[$di]=1
-        sizes[$di]=`echo "$parser" | cut -d 'd' -f 2`
-        let "di+=1"
-    fi
-    let "delim+=1"
-    parser=`echo "$dice" | cut -d '+' -f $delim`
-done
-
 
 # -------------------------------------------
 # Note: 245 characters is the limit for IRC
