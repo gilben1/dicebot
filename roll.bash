@@ -22,17 +22,13 @@ fi
 dice=`echo "$saying" | cut -d ' ' -f $amount`
 
 
-
 # Add "+" so the delimiter for parsing works to the end
-dice="$dice+"
+dice="+$dice+"
 
-#multiples[0]=""
-#sizes[0]=""
-#additives[0]=""
 
 delim=1 # current delimiter number
-di=0	# Dice/multiples index 
-ai=0	# Additives index
+di=0    # Dice/multiples index 
+ai=0    # Additives index
 
 parser=`echo "$dice" | cut -d '+' -f $delim`
 
@@ -40,14 +36,41 @@ parser=`echo "$dice" | cut -d '+' -f $delim`
 # To heck with it, let them have bad input.
 # Deal with bad input later
 
+additives=( $(echo "$dice" | grep -Po '[^d][0-9]+[^d]' ) )
+multiples=( $(echo "$dice" | grep -o '\+[0-9]*d' ) )
+sizes=( $(echo "$dice" | grep -o 'd[0-9]*\+' ) )
+
+additives=("${additives[@]//\+}")
+multiples=("${multiples[@]//\+}")
+multiples=("${multiples[@]//d}")
+sizes=("${sizes[@]//d}")
+
+
+
+
+
+for i in "${multiples[@]}" ; do
+    echo "PRIVMSG ${nick//:} :Multiples : $i"
+done
+
+for i in "${sizes[@]}" ; do
+    echo "PRIVMSG ${nick//:} :Sizes: $i"
+done
+
+for i in "${additives[@]}" ; do
+    echo "PRIVMSG ${nick//:} :Additives: $i"
+done
+
+exit
+
 while ! [[ $parser == "" ]] ; do
     # If the delim is an additive (only a number), treat it differently
     if [[ $parser =~ ^[0-9]+$ ]] ; then
         additives[$ai]=$parser
         let "ai+=1"
-    elif [[ $parser =~ ^[0-9]+d[0-9]+$ ]] ; then	
-        multiples[$di]=`echo "$parser" | cut -d 'd' -f 1`	
-        sizes[$di]=`echo "$parser" | cut -d 'd' -f 2` 
+    elif [[ $parser =~ ^[0-9]+d[0-9]+$ ]] ; then
+        multiples[$di]=`echo "$parser" | cut -d 'd' -f 1`
+        sizes[$di]=`echo "$parser" | cut -d 'd' -f 2`
         let "di+=1"
     elif [[ $parser =~ ^d[0-9]+$ ]] ; then
         multiples[$di]=1
