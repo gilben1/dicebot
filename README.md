@@ -22,6 +22,9 @@ Ex.
 Any user can type `dicebot: roll $DICECOMBO`
 Alternatively, users can type `!roll $DICECOMBO`
 
+# Private Message Usage
+The same commands can be found in when private messaging dicebot
+
 # Dice Combinations
 Dice combinations are `+` separated. They can be of three different formats:
 ```
