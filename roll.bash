@@ -32,16 +32,12 @@ ai=0    # Additives index
 
 parser=`echo "$dice" | cut -d '+' -f $delim`
 
-
-# To heck with it, let them have bad input.
-# Deal with bad input later
-
 additives=( $(echo "$dice" | grep -Po '\+[0-9]+\+' ) )
-multiples=( $(echo "$dice" | grep -o '\+[0-9]*d' ) )
-sizes=( $(echo "$dice" | grep -o 'd[0-9]*\+' ) )
+multiples=( $(echo "$dice" | grep -Po '[0-9]*d[0-9]+' | grep -Po '[0-9]+d' ) )
+sizes=( $(echo "$dice" | grep -Po '[0-9]+d[0-9]+' | grep -Po 'd[0-9]+' ) )
+#sizes=( $(echo "$dice" | grep -Po 'd[0-9]+\+' ) )
 
 additives=("${additives[@]//\+}")
-multiples=("${multiples[@]//\+}")
 multiples=("${multiples[@]//d}")
 sizes=("${sizes[@]//d}")
 
