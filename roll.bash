@@ -33,29 +33,14 @@ ai=0    # Additives index
 parser=`echo "$dice" | cut -d '+' -f $delim`
 
 additives=( $(echo "$dice" | grep -Po '\+[0-9]+\+' ) )
-multiples=( $(echo "$dice" | grep -Po '[0-9]*d[0-9]+' | grep -Po '[0-9]+d' ) )
-sizes=( $(echo "$dice" | grep -Po '[0-9]+d[0-9]+' | grep -Po 'd[0-9]+' ) )
-#sizes=( $(echo "$dice" | grep -Po 'd[0-9]+\+' ) )
+multiples=( $(echo "$dice" | grep -Po '\+[0-9]*d[0-9]+' ) ) # | grep -Po '[0-9]+d' ) )
+sizes=( $(echo "$dice" | grep -Po '\+[0-9]*d[0-9]+' | grep -Po 'd[0-9]+' ) )
 
 additives=("${additives[@]//\+}")
-multiples=("${multiples[@]//d}")
+multiples=("${multiples[@]/\+d[0-9]*/1}")
+multiples=("${multiples[@]/d[0-9]*/}")
+multiples=("${multiples[@]//\+}")
 sizes=("${sizes[@]//d}")
-
-
-
-
-
-for i in "${multiples[@]}" ; do
-    echo "PRIVMSG ${nick//:} :Multiples : $i"
-done
-
-for i in "${sizes[@]}" ; do
-    echo "PRIVMSG ${nick//:} :Sizes: $i"
-done
-
-for i in "${additives[@]}" ; do
-    echo "PRIVMSG ${nick//:} :Additives: $i"
-done
 
 # -------------------------------------------
 # Note: 245 characters is the limit for IRC
