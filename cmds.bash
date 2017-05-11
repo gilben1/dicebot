@@ -34,8 +34,6 @@ function has()
     echo "$1" | grep -i $2 > /dev/null
 }
 
-
-botnick=$(head -n 1 ./data/botnick.txt)
 regex="\b${botnick}\b"
 
 # Private messages

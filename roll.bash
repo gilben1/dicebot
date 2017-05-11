@@ -3,57 +3,53 @@
 read nick chan saying
 dicecap=25000
 
-# test for the command used
+. ./.config
+
+# Sets the header based on being in a channel or in a private message
 header="PRIVMSG $chan $nick: "
-if [[ $chan == dicebot ]] ; then
-    amount=1
+if [[ $chan == $botnick ]] ; then
     header="PRIVMSG ${nick//:} :"
-elif `echo "$saying" | grep -i '\!roll\b' > /dev/null` ; then
+fi
+
+# Outputs the message to send
+# $header = heading bit (Private msg vs channel msg)
+# $1 = Message to send
+function say()
+{
+    echo "${header}$1"
+}
+
+
+# Default delimiter for the dice
+amount=3
+
+# If it's a !roll, subtract by one
+if `echo "$saying" | grep -i '\!roll\b' > /dev/null` ; then
     amount=2
-else
-    amount=3
 fi
 
 
 
 
 # Cut out the dice from the message
-dice=`echo "$saying" | cut -d ' ' -f $amount | cut -d '#' -f 1`
-# Add "+" so the delimiter for parsing works to the end
-dice="$dice+"
+dice=`echo "$saying" | cut -d ' ' -f $amount`
 
-#multiples[0]=""
-#sizes[0]=""
-#additives[0]=""
-
-delim=1 # current delimiter number
-di=0	# Dice/multiples index 
-ai=0	# Additives index
-
-parser=`echo "$dice" | cut -d '+' -f $delim`
+# Add "+" to the beginning and end so the grepping works correctly
+dice="+$dice+"
 
 
-# To heck with it, let them have bad input.
-# Deal with bad input later
 
-while ! [[ $parser == "" ]] ; do
-    # If the delim is an additive (only a number), treat it differently
-    if [[ $parser =~ ^[0-9]+$ ]] ; then
-        additives[$ai]=$parser
-        let "ai+=1"
-    elif [[ $parser =~ ^[0-9]+d[0-9]+$ ]] ; then	
-        multiples[$di]=`echo "$parser" | cut -d 'd' -f 1`	
-        sizes[$di]=`echo "$parser" | cut -d 'd' -f 2` 
-        let "di+=1"
-    elif [[ $parser =~ ^d[0-9]+$ ]] ; then
-        multiples[$di]=1
-        sizes[$di]=`echo "$parser" | cut -d 'd' -f 2`
-        let "di+=1"
-    fi
-    let "delim+=1"
-    parser=`echo "$dice" | cut -d '+' -f $delim`
-done
+additives=( $(echo "$dice" | grep -Po '\+[0-9]+\+' ) )
+multiples=( $(echo "$dice" | grep -Po '\+[0-9]*d[0-9]+' ) )
+sizes=( $(echo "$dice" | grep -Po '\+[0-9]*d[0-9]+' | grep -Po 'd[0-9]+' ) )
 
+additives=("${additives[@]//\+}")
+
+multiples=("${multiples[@]/\+d[0-9]*/1}")
+multiples=("${multiples[@]/d[0-9]*/}")
+multiples=("${multiples[@]//\+}")
+
+sizes=("${sizes[@]//d}")
 
 # -------------------------------------------
 # Note: 245 characters is the limit for IRC
@@ -74,7 +70,7 @@ done
 
 # Timeout failsafe for the time being 
 if [[ $numdice -gt $dicecap ]] ; then
-    echo "${header}Ok, seriously. $numdice is too many dice. Terminating to prevent timeout"
+    say "Ok, seriously. $numdice is too many dice. Terminating to prevent timeout"
     exit
 fi
 
@@ -115,7 +111,7 @@ do
 done
 
 if [[ ${#sizes[@]} == 0 ]] ; then
-    echo "${header}No good dice rolls detected. Type 'dicebot: help' For correct rolling syntax."
+    say "No good dice rolls detected. Type 'dicebot: help' For correct rolling syntax."
     exit
 fi
 
@@ -125,7 +121,7 @@ hide=0
 numdiceout=`echo "$numdice" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
 
 if [[ $numdice -gt 100 ]] ; then
-    echo "${header}Dice overflow exception ($numdiceout dice). Hiding main output."
+    say "Dice overflow exception ($numdiceout dice). Hiding main output."
     hide=1
 fi
 
@@ -150,7 +146,7 @@ done
 if [[ $hide == 0 ]] ; then
     for i in "${dicemsg[@]}"
     do
-        echo "$header$i"
+        say "$i"
     done
 fi
 
@@ -161,9 +157,9 @@ sumout=`echo "$sum" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3
 # If beyond a certain value, add a scientific notation output in addition to the regular
 if [ $sum -gt 100000 ] ; then
     sciencesum=$(printf "%0.3E\n" $sum)
-    echo "${header}Sum of all $numdiceout dice: $sumout or $sciencesum"
+    say "Sum of all $numdiceout dice: $sumout or $sciencesum"
 else
-    echo "${header}Sum of all $numdiceout dice: $sumout"
+    say "Sum of all $numdiceout dice: $sumout"
 fi
 
 
