@@ -5,11 +5,20 @@ dicecap=25000
 
 . ./.config
 
-# test for the command used
+# Sets the header based on being in a channel or in a private message
 header="PRIVMSG $chan $nick: "
 if [[ $chan == $botnick ]] ; then
     header="PRIVMSG ${nick//:} :"
 fi
+
+# Outputs the message to send
+# $header = heading bit (Private msg vs channel msg)
+# $1 = Message to send
+function say()
+{
+    echo "${header}$1"
+}
+
 
 # Default delimiter for the dice
 amount=3
@@ -61,7 +70,7 @@ done
 
 # Timeout failsafe for the time being 
 if [[ $numdice -gt $dicecap ]] ; then
-    echo "${header}Ok, seriously. $numdice is too many dice. Terminating to prevent timeout"
+    say "Ok, seriously. $numdice is too many dice. Terminating to prevent timeout"
     exit
 fi
 
@@ -102,7 +111,7 @@ do
 done
 
 if [[ ${#sizes[@]} == 0 ]] ; then
-    echo "${header}No good dice rolls detected. Type 'dicebot: help' For correct rolling syntax."
+    say "No good dice rolls detected. Type 'dicebot: help' For correct rolling syntax."
     exit
 fi
 
@@ -112,7 +121,7 @@ hide=0
 numdiceout=`echo "$numdice" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
 
 if [[ $numdice -gt 100 ]] ; then
-    echo "${header}Dice overflow exception ($numdiceout dice). Hiding main output."
+    say "Dice overflow exception ($numdiceout dice). Hiding main output."
     hide=1
 fi
 
@@ -137,7 +146,7 @@ done
 if [[ $hide == 0 ]] ; then
     for i in "${dicemsg[@]}"
     do
-        echo "$header$i"
+        say "$i"
     done
 fi
 
@@ -148,9 +157,9 @@ sumout=`echo "$sum" | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3
 # If beyond a certain value, add a scientific notation output in addition to the regular
 if [ $sum -gt 100000 ] ; then
     sciencesum=$(printf "%0.3E\n" $sum)
-    echo "${header}Sum of all $numdiceout dice: $sumout or $sciencesum"
+    say "Sum of all $numdiceout dice: $sumout or $sciencesum"
 else
-    echo "${header}Sum of all $numdiceout dice: $sumout"
+    say "Sum of all $numdiceout dice: $sumout"
 fi
 
 
