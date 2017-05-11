@@ -3,43 +3,43 @@
 read nick chan saying
 dicecap=25000
 
+. ./.config
+
 # test for the command used
 header="PRIVMSG $chan $nick: "
-if [[ $chan == dicebot ]] ; then
-    amount=1
+if [[ $chan == $botnick ]] ; then
     header="PRIVMSG ${nick//:} :"
-elif `echo "$saying" | grep -i '\!roll\b' > /dev/null` ; then
+fi
+
+# Default delimiter for the dice
+amount=3
+
+# If it's a !roll, subtract by one
+if `echo "$saying" | grep -i '\!roll\b' > /dev/null` ; then
     amount=2
-else
-    amount=3
 fi
 
 
 
 
 # Cut out the dice from the message
-#dice=`echo "$saying" | cut -d ' ' -f $amount | cut -d '#' -f 1`
 dice=`echo "$saying" | cut -d ' ' -f $amount`
 
-
-# Add "+" so the delimiter for parsing works to the end
+# Add "+" to the beginning and end so the grepping works correctly
 dice="+$dice+"
 
 
-delim=1 # current delimiter number
-di=0    # Dice/multiples index 
-ai=0    # Additives index
-
-parser=`echo "$dice" | cut -d '+' -f $delim`
 
 additives=( $(echo "$dice" | grep -Po '\+[0-9]+\+' ) )
-multiples=( $(echo "$dice" | grep -Po '\+[0-9]*d[0-9]+' ) ) # | grep -Po '[0-9]+d' ) )
+multiples=( $(echo "$dice" | grep -Po '\+[0-9]*d[0-9]+' ) )
 sizes=( $(echo "$dice" | grep -Po '\+[0-9]*d[0-9]+' | grep -Po 'd[0-9]+' ) )
 
 additives=("${additives[@]//\+}")
+
 multiples=("${multiples[@]/\+d[0-9]*/1}")
 multiples=("${multiples[@]/d[0-9]*/}")
 multiples=("${multiples[@]//\+}")
+
 sizes=("${sizes[@]//d}")
 
 # -------------------------------------------
