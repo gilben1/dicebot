@@ -33,5 +33,7 @@ d#
 #
 ```
 \#d# will roll the # of dice specified of the second # type. For example, `2d6` simulates rolling 2 six-sided die.
+
 d# will roll 1 die of the specified second # type. For example, `d20` simulates rolling 1 twenty-sided die
+
 \# is simply adding an integer value to the dice roll. `2d6+10` will do as shown above, and then add 10 to the final value.
