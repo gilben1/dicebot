@@ -5,9 +5,16 @@ function send {
     echo "$1" >> .botfile
 }
 
-. ./.config
+# If no .config exists, generate a new one
+if [ ! -f .config ] ; then
+    echo "botnick=\"dicebot\"" >> .config
+    echo "server=\"irc.cat.pdx.edu\"" >> .config
+    echo "port=\"6697\"" >> .config
+    echo "mail=\"\"" >> .config
+    echo "admin=\":\"" >> .config
+fi
 
-echo $botnick > ./data/botnick.txt
+. ./.config
 
 connection="$server:$port"
 
