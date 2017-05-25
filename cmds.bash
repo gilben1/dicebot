@@ -27,14 +27,12 @@ function say-to()
     echo "PRIVMSG $chan $1: $2"
 }
 
-# Usage: has "$thing to search" 'regex'
+# Usage: has "$thing to search" "regex"
 # Returns if thing 2 is found in thing 1
 function has()
 {
-    echo "$1" | grep -i $2 > /dev/null
+    echo "$1" | grep -Pi "$2" > /dev/null
 }
-
-regex="\b${botnick}\b"
 
 # Private messages
 if [[ $chan == $botnick ]] ; then
@@ -43,12 +41,12 @@ if [[ $chan == $botnick ]] ; then
         echo "$output"
     fi
 
-    if has "$saying" '\broll\b' ; then
+    if has "$saying" "\broll\b" ; then
         output=`echo "$nick" "$chan" "$saying" | ./roll.bash`
         echo "$output"
-    elif has "$saying" '\bhelp\b' ; then
+    elif has "$saying" "\bhelp\b" ; then
         privsay "Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt"
-    elif has "$saying" '\bstats\b' ; then
+    elif has "$saying" "\bstats\b" ; then
         sum=$(head -n 1 ./data/sum.log)
         sumlong=`echo $sum | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
         privsay "Total sum of all dice rolled: $(printf "%0.3E\n" $sum) or $sumlong"
@@ -57,7 +55,7 @@ if [[ $chan == $botnick ]] ; then
         totlong=`echo $tot | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
         privsay "Total number of dice rolled: $(printf "%0.3E\n" $tot) or $totlong"
 
-        if has "$saying" '\busers\b' ; then
+        if has "$saying" "\busers\b" ; then
             out="Users of dicebot:"
             num=0
             while read p; do
@@ -69,29 +67,33 @@ if [[ $chan == $botnick ]] ; then
     fi
 # Regular channel commands
 elif ! grep -Fxqi "${nick//:}" ./data/blacklist.txt ; then
-    if has "$saying" "$regex" ; then
-        if has "$saying" '\bhelp\b' ; then
-            say-to "$nick" "Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt for help using dicebot"
-        elif has "$saying" '\broll\b' ; then
-            output=`echo "$nick" "$chan" "$saying" | ./roll.bash`
-            echo "$output"
-        elif has "$saying" '\bwho\b' ; then
-            say-to "$nick" "I am a souless automatan created by gilben. This command pings gilben, so be sure to spam it as much as possible"
-        elif has "$saying" '\bcommands\b' ; then
-            say-to "$nick" "Dicebot Commands: commands, help, !roll, roll, stats, who"
-        elif has "$saying" '\bstats\b' ; then
-            sum=$(head -n 1 ./data/sum.log)
-            sumlong=`echo $sum | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
-            say-to "$nick" "Total sum of all dice rolled: $(printf "%0.3E\n" $sum) or $sumlong"
+    if has "$saying" "^${botnick}:? help\b" ; then
+        say-to "$nick" "Please visit http://web.cecs.pdx.edu/~nickg/dicebothelp.txt for help using dicebot"
 
-            tot=$(head -n 1 ./data/dice.log)
-            totlong=`echo $tot | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
-            say-to "$nick" "Total number of dice rolled: $(printf "%0.3E\n" $tot) or $totlong"
-        elif has "$saying" '\bsource\b' ; then
-            say-to "$nick" "Dicebot source code: https://gitlab.com/gilben/dicebot"
-        fi
-    elif has "$saying" '\!roll\b' ; then
+    elif has "$saying" "^${botnick}:? roll\b" ; then
         output=`echo "$nick" "$chan" "$saying" | ./roll.bash`
         echo "$output"
+
+    elif has "$saying" "^\!roll\b" ; then
+        output=`echo "$nick" "$chan" "$saying" | ./roll.bash`
+        echo "$output"
+
+    elif has "$saying" "^${botnick}:? who\b" ; then
+        say-to "$nick" "I am a souless automatan created by gilben. This command pings gilben, so be sure to spam it as much as possible"
+
+    elif has "$saying" "^${botnick}:? commands\b" ; then
+        say-to "$nick" "Dicebot Commands: commands, help, !roll, roll, stats, who"
+
+    elif has "$saying" "^${botnick}:? stats\b" ; then
+        sum=$(head -n 1 ./data/sum.log)
+        sumlong=`echo $sum | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
+        say-to "$nick" "Total sum of all dice rolled: $(printf "%0.3E\n" $sum) or $sumlong"
+
+        tot=$(head -n 1 ./data/dice.log)
+        totlong=`echo $tot | sed -re ' :restart ; s/([0-9])([0-9]{3})($|[^0-9])/\1,\2\3/ ; t restart '`
+        say-to "$nick" "Total number of dice rolled: $(printf "%0.3E\n" $tot) or $totlong"
+
+    elif has "$saying" "^${botnick}:? source\b" ; then
+        say-to "$nick" "Dicebot source code: https://gitlab.com/gilben/dicebot"
     fi
 fi
