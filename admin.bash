@@ -2,9 +2,6 @@
 
 read nick saying
 
-#TODO change greps for conditions in "has" function
-
-
 # Send message to indicated channel
 # $1 = channel to send to
 # $2 = message to send
@@ -33,10 +30,10 @@ function act()
 # $2 = regex search condition
 function has()
 {
-    echo "$1" | grep -i $2 > /dev/null
+    echo "$1" | grep -i "$2" > /dev/null
 }
 
-if has "$saying" '^!join\b' ; then
+if has "$saying" "^!join\b" ; then
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     pass=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 2`
     if [[ $pass == $channel ]] ; then
@@ -45,17 +42,17 @@ if has "$saying" '^!join\b' ; then
     echo "JOIN #$channel $pass"
     privsay "attempting to join #$channel"
 
-elif has "$saying" '^!part\b' ; then
+elif has "$saying" "^!part\b" ; then
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     echo "PART #$channel"
     privsay "attempting to leave #$channel"
 
-elif has "$saying" '^!reset\b' ; then
+elif has "$saying" "^!reset\b" ; then
     echo 0 > ./data/sum.log
     echo 0 > ./data/dice.log    
     rm ./data/users.log
 
-elif has "$saying" '^!autojoin\b' ; then
+elif has "$saying" "^!autojoin\b" ; then
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     pass=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 2`
     if [[ $pass == $channel ]] ; then
@@ -69,7 +66,7 @@ elif has "$saying" '^!autojoin\b' ; then
         privsay "#$channel is already in the autojoin file"
     fi
 
-elif has "$saying" '^!autoremove\b' ; then
+elif has "$saying" "^!autoremove\b" ; then
     channel=`echo "$saying" | cut -d '#' -f 2 | cut -d ' ' -f 1`
     line=$(grep -n "#$channel" ./data/autojoin.txt | cut -d : -f 1)
     if [ -z $line ] ; then
@@ -79,14 +76,14 @@ elif has "$saying" '^!autoremove\b' ; then
         privsay "#$channel has been removed from the autojoin file"
     fi
 
-elif has "$saying" '^!autolist\b' ; then
+elif has "$saying" "^!autolist\b" ; then
     output="Channels in autojoin.txt: "
     while read p; do
         output="$output \"$p\""
     done <./data/autojoin.txt
     privsay "$output"
 
-elif has "$saying" '^!puppet\b' ; then
+elif has "$saying" "^!puppet\b" ; then
     index=0
     delim=2
     parser=`echo "$saying" | cut -d ' ' -f $delim`
@@ -99,7 +96,7 @@ elif has "$saying" '^!puppet\b' ; then
 
     act=0
     let "newdim=$delim-1"
-    if has "$saying" '\/me' ; then
+    if has "$saying" "\/me" ; then
         message=`echo "$saying" | cut -d '#' -f $newdim | cut -d ' ' -f 3-5000`
         act=1
     else
