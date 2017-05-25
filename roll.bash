@@ -24,7 +24,7 @@ function say()
 amount=3
 
 # If it's a !roll, subtract by one
-if `echo "$saying" | grep -i '\!roll\b' > /dev/null` ; then
+if `echo "$saying" | grep -Pi "^!?roll\b" > /dev/null` ; then
     amount=2
 fi
 
