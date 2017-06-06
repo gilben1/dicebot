@@ -11,8 +11,11 @@ bot.connect(server, port, nick)
 bot.join_chan("#gilbentest")
 
 while 1:
-    text = bot.get_text()
-    print "<- " + text
+    ircmsg = bot.get_text()
+    print "<- " + ircmsg
 
-    if "PRIVMSG" in text and "#gilbentest" in text and "hello" in text:
-        irc.send("#gilbentest", "hi there")
+    #if "PRIVMSG" in ircmsg:
+    if ircmsg.find("PRIVMSG") != -1:
+        name = ircmsg.split('!',1)[0][1:]
+        say = "Your name is " + name
+        bot.send("#gilbentest", say)
