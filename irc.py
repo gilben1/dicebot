@@ -12,6 +12,10 @@ class IRC:
         self.irc.send("PRIVMSG " + chan + " :" + msg + "\n")
         print "-> PRIVMSG " + chan + " :" + msg
 
+    def send_raw(self, msg):
+        self.irc.send(msg)
+        print "-> " + msg
+
     def connect(self, server, port, botnick):
         print "connecting to: " + server
         self.irc.connect((server, port))
@@ -30,5 +34,7 @@ class IRC:
             self.irc.send('PONG\n')
             print "-> PONG"
         return text
-    def findWholeWord(w):
-        return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
+
+    def regex(self, pattern, text):
+        output = re.search(pattern, text)
+        return output
