@@ -10,10 +10,9 @@ if not os.path.isfile("./config.yaml"):
             botnick = 'dicebot-py',
             connection = dict(
                 server = 'irc.cat.pdx.edu',
-                port = 6667,
+                port = 6697,
                 ),
             channels = dict(
-                gilbentest = '',
                 )
             )
 
@@ -33,6 +32,10 @@ nick = config['botnick']
 
 bot = IRC()
 bot.connect(server, port, nick)
+
+if not config['channels']:
+    print "No channels to join, edit the config.yaml file to add some"
+    exit()
 
 for chan, passwd in config['channels'].items():
     send = "#" + chan + " " + passwd

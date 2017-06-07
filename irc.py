@@ -1,15 +1,16 @@
-import socket
+import socket, ssl
 import sys
 import re
 import time
 
 class IRC:
+    s = socket.socket()
     irc = socket.socket()
 
     def __init__(self):
-        self.irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         timeout = 5 * 60
-        self.irc.settimeout(timeout)
+        self.s.settimeout(timeout)
 
     def send(self, chan, msg):
         self.irc.send("PRIVMSG " + chan + " :" + msg + "\n")
@@ -21,7 +22,8 @@ class IRC:
 
     def connect(self, server, port, botnick):
         print "connecting to: " + server
-        self.irc.connect((server, port))
+        self.s.connect((server, port))
+        self.irc = ssl.wrap_socket(self.s)
         self.irc.send("USER " + botnick + " " + botnick + " " + botnick + ": " + botnick + "\n")
         self.irc.send("NICK " + botnick + "\n")
 
