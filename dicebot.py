@@ -22,7 +22,10 @@ while 1:
     if bot.regex('\sPRIVMSG\s', ircmsg):
         name = ircmsg.split('!',1)[0][1:]
         message = ircmsg.split('PRIVMSG',1)[1].split(':',1)[1].rstrip()
-        channel = "#" + ircmsg.split('#',1)[1].split(' ',1)[0]
+        try:
+            channel = "#" + ircmsg.split('#',1)[1].split(' ',1)[0]
+        except IndexError:
+            channel = nick
 
         echo_in = ":" + name + " " + channel + " " + message
         echo_out = subprocess.Popen(['echo', echo_in], stdout=subprocess.PIPE)
