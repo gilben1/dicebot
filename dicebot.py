@@ -2,15 +2,41 @@ from irc import *
 import os
 import random
 import subprocess
+import yaml
 
-server = "irc.cat.pdx.edu"
-port = 6667
-nick = "dicebot-py"
+
+if not os.path.isfile("./config.yaml"):
+    config = dict(
+            botnick = 'dicebot-py',
+            connection = dict(
+                server = 'irc.cat.pdx.edu',
+                port = 6667,
+                ),
+            channels = dict(
+                gilbentest = '',
+                )
+            )
+
+    with open('config.yaml', 'w') as outfile:
+        yaml.dump(config, outfile, default_flow_style=False)
+else:
+    with open('config.yaml', 'r') as infile:
+        config = yaml.load(infile)
+
+
+print config['botnick'] + " is my name"
+print config['connection']['server'] + " is my server"
+
+server = config['connection']['server']
+port = config['connection']['port']
+nick = config['botnick']
 
 bot = IRC()
 bot.connect(server, port, nick)
-bot.join_chan("#gilbentest")
 
+for chan, passwd in config['channels'].items():
+    send = "#" + chan + " " + passwd
+    bot.join_chan(send)
 
 while 1:
     ircmsg = bot.get_text()
