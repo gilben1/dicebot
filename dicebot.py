@@ -52,7 +52,7 @@ while 1:
         name = ircmsg.split('!',1)[0][1:]
         message = ircmsg.split('PRIVMSG',1)[1].split(':',1)[1].rstrip()
         try:
-            channel = "#" + ircmsg.split('#',1)[1].split(' ',1)[0]
+            channel = "#" + ircmsg.split('PRIVMSG #',1)[1].split(' ',1)[0]
         except IndexError:
             channel = nick
 
