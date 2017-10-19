@@ -3,7 +3,7 @@ import os
 import random
 import subprocess
 import yaml
-
+from sys import exit
 
 if not os.path.isfile("./config.yaml"):
     config = dict(
@@ -18,6 +18,8 @@ if not os.path.isfile("./config.yaml"):
 
     with open('config.yaml', 'w') as outfile:
         yaml.dump(config, outfile, default_flow_style=False)
+    print "Config file generated, exitting"
+    sys.exit(0)
 else:
     with open('config.yaml', 'r') as infile:
         config = yaml.load(infile)
