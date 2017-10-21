@@ -8,6 +8,7 @@ from sys import exit
 if not os.path.isfile("./config.yaml"):
     config = dict(
             botnick = 'dicebot-py',
+            admin = '',
             connection = dict(
                 server = 'irc.cat.pdx.edu',
                 port = 6697,
@@ -31,6 +32,7 @@ print config['connection']['server'] + " is my server"
 server = config['connection']['server']
 port = config['connection']['port']
 nick = config['botnick']
+admin = config['admin']
 
 bot = IRC()
 bot.connect(server, port, nick)
@@ -58,7 +60,7 @@ while 1:
         except IndexError:
             channel = nick
 
-        echo_in = ":" + name + " " + channel + " " + message
+        echo_in = ":" + name + " " + channel + " " + nick + " :" + admin + " " + message
         echo_out = subprocess.Popen(['echo', echo_in], stdout=subprocess.PIPE)
         output = subprocess.check_output('./cmds.bash', stdin=echo_out.stdout)
         if output:

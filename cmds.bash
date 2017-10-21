@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-read nick chan saying
+read nick chan botnick admin saying
 
-. ./.config
+#. ./.config
 
 # Sends message to current channel
 # $1 = message to send
