@@ -47,6 +47,7 @@ for chan, passwd in config['channels'].items():
 
 while 1:
     ircmsg = bot.get_text()
+    if not ircmsg: break
     print "<- " + ircmsg
 
     if ircmsg[0:4] == 'PING':
