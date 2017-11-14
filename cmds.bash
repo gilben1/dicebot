@@ -34,6 +34,16 @@ function has()
     echo "$1" | grep -Pi "$2" > /dev/null
 }
 
+# If data folder is not there
+if [ ! -d ./data ] ; then
+    mkdir ./data
+fi
+
+# If blacklist file is gone
+if [ ! -f ./data/blacklist.txt ] ; then
+    touch ./data/blacklist.txt
+fi
+
 # Private messages
 if [[ $chan == $botnick ]] ; then
     if [[ $nick == $admin ]] ; then # Admin commands
